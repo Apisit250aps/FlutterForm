@@ -64,7 +64,7 @@ class _SigninFormState extends State<SigninForm> {
 
   Future<String> _getFilePath() async {
     final directory = await getApplicationDocumentsDirectory();
-    
+
     return '${directory.path}/token.txt';
   }
 
@@ -82,6 +82,7 @@ class _SigninFormState extends State<SigninForm> {
       final filePath = await _getFilePath();
       final file = File(filePath);
       final content = await file.readAsString();
+      print('>>> $content');
       setState(() {
         _fileContent = content;
       });

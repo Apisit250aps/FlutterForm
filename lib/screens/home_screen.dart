@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _initialize() async {
     await _loadToken();
     if (token.isNotEmpty) {
+      print(token);
       setState(() {
         futureUser = fetchUserData();
       });
@@ -48,6 +49,20 @@ class _HomeScreenState extends State<HomeScreen> {
       // Handle file read error
       token = '';
     }
+  }
+
+  Future<void> _writeToFile(String content) async {
+    final filePath = await _getFilePath();
+    final file = File(filePath);
+    await file.writeAsString(content);
+    setState(() {
+      token = content;
+    });
+  }
+
+  Future<void> _logout() async {
+    _writeToFile('');
+    _initialize();
   }
 
   Future<String> _getFilePath() async {
@@ -76,7 +91,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading:
+            false, // Disables the automatic leading widget
+        leading: null, // Explicitly set leading to null
         title: const Text('User Information'),
+        actions: [
+          IconButton(onPressed: _logout, icon: Icon(Icons.exit_to_app))
+        ],
       ),
       body: Center(
         child: FutureBuilder<User>(
@@ -109,7 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
-      
     );
   }
 }

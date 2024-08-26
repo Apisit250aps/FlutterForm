@@ -7,8 +7,9 @@ class User {
   final bool isAdmin;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String fname;
-  final String lname;
+  final String? fname;  // Make these fields nullable
+  final String? lname;
+  final String? email;
 
   User({
     required this.id,
@@ -18,8 +19,9 @@ class User {
     required this.isAdmin,
     required this.createdAt,
     required this.updatedAt,
-    required this.fname,
-    required this.lname,
+    this.fname,
+    this.lname,
+    this.email,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -31,8 +33,9 @@ class User {
       isAdmin: json['isAdmin'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      fname: json['fname'],
+      fname: json['fname'],  // These fields are now optional
       lname: json['lname'],
+      email: json['email'],
     );
   }
 }
