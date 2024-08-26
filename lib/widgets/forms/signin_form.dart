@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_form/screens/home_screen.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -46,6 +48,7 @@ class _SigninFormState extends State<SigninForm> {
         if (token != null) {
           print('Login successful. Token: $token');
           await _writeToFile(token);
+          await Get.to(const HomeScreen());
         } else {
           print('Token not received');
         }
@@ -61,7 +64,7 @@ class _SigninFormState extends State<SigninForm> {
 
   Future<String> _getFilePath() async {
     final directory = await getApplicationDocumentsDirectory();
-    print('${directory.path}/token.txt');
+    
     return '${directory.path}/token.txt';
   }
 
