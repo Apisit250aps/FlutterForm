@@ -16,14 +16,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (token == null || token.isEmpty) {
       // ไม่มี token ให้ไปหน้า Login
-      print('Token is available: $token');
+     
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => SignupScreen()),
       );
     } else {
       // ถ้ามี token ก็อยู่ในหน้าหลักต่อไป
-      print('Token is available: $token');
+      
     }
   }
 

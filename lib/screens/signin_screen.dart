@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form/screens/signup_screen.dart';
+import 'package:flutter_form/widgets/forms/signin_form.dart';
 import 'package:get/get.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -50,14 +51,19 @@ class SigninScreen extends StatelessWidget {
                   child: const Text(
                     "Get start",
                     style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        height: 1.2,
-                        color: Colors.green),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      height: 1.2,
+                      color: Colors.green,
+                    ),
                   ),
-                )
+                ),
               ],
             ),
+            const SizedBox(
+              height: 45,
+            ),
+            const SigninForm()
           ],
         ),
       ),
