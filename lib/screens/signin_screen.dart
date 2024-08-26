@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form/screens/signin_screen.dart';
-import 'package:flutter_form/widgets/forms/signup_form.dart';
+import 'package:flutter_form/screens/signup_screen.dart';
 import 'package:get/get.dart';
 
-class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+class SigninScreen extends StatelessWidget {
+  const SigninScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,7 @@ class SignupScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Get Start absolutely free",
+              "Sign in to your account",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 24,
@@ -30,7 +29,7 @@ class SignupScreen extends StatelessWidget {
             Row(
               children: [
                 const Text(
-                  "Already have an account?",
+                  "Don't have an account?",
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
@@ -43,13 +42,13 @@ class SignupScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Get.to(
-                        const SigninScreen()); // Correctly call Get.to inside the onTap function
+                        const SignupScreen()); // Correctly call Get.to inside the onTap function
                   },
                   splashColor: Colors
                       .blueAccent, // Optional: Add splash color for visual feedback
                   highlightColor: Colors.blue.withOpacity(0.3),
                   child: const Text(
-                    "Sign in",
+                    "Get start",
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 18,
@@ -59,10 +58,6 @@ class SignupScreen extends StatelessWidget {
                 )
               ],
             ),
-            const SizedBox(
-              height: 45,
-            ),
-            const SignUpForm(),
           ],
         ),
       ),

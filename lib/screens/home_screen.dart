@@ -35,8 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text("Home"),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading:
+            false, // Disables the automatic leading widget
+        leading: null, // Explicitly set leading to null
+      ),
+      body: const Text("Home"),
     );
   }
 }
