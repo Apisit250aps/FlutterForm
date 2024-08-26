@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_form/screens/signup_screen.dart';
+import 'package:flutter_form/screens/signin_screen.dart';
+import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,26 +15,48 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-
-    if (token == null || token.isEmpty) {
-      // ไม่มี token ให้ไปหน้า Login
-     
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SignupScreen()),
-      );
-    } else {
-      // ถ้ามี token ก็อยู่ในหน้าหลักต่อไป
-      
+    final token = _readFromFile();
+    if (token == '' || token == null) {
+      Get.to(SigninScreen());
     }
   }
+
+  String _fileContent = "";
 
   @override
   void initState() {
     super.initState();
+
     _checkToken();
+  }
+
+  Future<String> _getFilePath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return '${directory.path}/token.txt';
+  }
+
+  Future<void> _writeToFile(String content) async {
+    final filePath = await _getFilePath();
+    final file = File(filePath);
+    await file.writeAsString(content);
+    setState(() {
+      _fileContent = content;
+    });
+  }
+
+  Future<void> _readFromFile() async {
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+      final content = await file.readAsString();
+      setState(() {
+        _fileContent = content;
+      });
+    } catch (e) {
+      setState(() {
+        _fileContent = "Error reading file: $e";
+      });
+    }
   }
 
   @override
