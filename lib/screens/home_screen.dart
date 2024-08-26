@@ -113,22 +113,59 @@ class _HomeScreenState extends State<HomeScreen> {
               final user = snapshot.data!;
               return Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('ID: ${user.id}'),
-                    Text('Username: ${user.username}'),
-                    Text('First Name: ${user.fname}'),
-                    Text('Last Name: ${user.lname}'),
-                    Text('Admin: ${user.isAdmin}'),
-                    Text('Created At: ${user.createdAt}'),
-                    Text('Updated At: ${user.updatedAt}'),
-                  ],
+                child: Card(
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _buildUserInfoRow('ID', user.id),
+                        _buildUserInfoRow('Username', user.username),
+                        if (user.fname != null)
+                          _buildUserInfoRow('First Name', user.fname!),
+                        if (user.lname != null)
+                          _buildUserInfoRow('Last Name', user.lname!),
+                        _buildUserInfoRow('Admin', user.isAdmin ? 'Yes' : 'No'),
+                        _buildUserInfoRow(
+                            'Created At', user.createdAt.toLocal().toString()),
+                        _buildUserInfoRow(
+                            'Updated At', user.updatedAt.toLocal().toString()),
+                      ],
+                    ),
+                  ),
                 ),
               );
             }
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildUserInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16.0,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 16.0,
+            ),
+          ),
+        ],
       ),
     );
   }
