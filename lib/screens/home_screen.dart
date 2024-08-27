@@ -28,13 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initialize() async {
     await _loadToken();
-    if (token.isNotEmpty) {
-      print(token);
+    if (token!='') {
       setState(() {
         futureUser = fetchUserData();
       });
+      return;
     } else {
-      Get.to(const SigninScreen());
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SigninScreen()),
+        (Route<dynamic> route) => false,
+      );
     }
   }
 

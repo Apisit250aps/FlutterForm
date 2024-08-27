@@ -42,8 +42,12 @@ class SignupScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.to(
-                        const SigninScreen()); // Correctly call Get.to inside the onTap function
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SigninScreen()),
+                      (Route<dynamic> route) => false,
+                    ); // Correctly call Get.to inside the onTap function
                   },
                   splashColor: Colors
                       .blueAccent, // Optional: Add splash color for visual feedback

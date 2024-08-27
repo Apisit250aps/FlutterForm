@@ -48,7 +48,11 @@ class _SigninFormState extends State<SigninForm> {
         if (token != null) {
           print('Login successful. Token: $token');
           await _writeToFile(token);
-          await Get.to(const HomeScreen());
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (Route<dynamic> route) => false,
+          );
         } else {
           print('Token not received');
         }
