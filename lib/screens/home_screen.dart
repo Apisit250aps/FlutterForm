@@ -16,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String token = "";
-  late Future<User> futureUser;
 
   final String apiUrl = 'https://wallet-api-7m1z.onrender.com/user/information';
 
@@ -27,11 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initialize() async {
-    await _loadToken();
-    if (token != '') {
-      setState(() {
-        futureUser = fetchUserData();
-      });
+    String auth = await _loadToken();
+    if (auth.isNotEmpty) {
       return;
     } else {
       Navigator.pushAndRemoveUntil(
@@ -42,16 +38,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadToken() async {
+  Future<String> _loadToken() async {
     try {
       final filePath = await _getFilePath();
       final file = File(filePath);
       if (await file.exists()) {
         token = await file.readAsString();
       }
+      return token;
     } catch (e) {
       // Handle file read error
-      token = '';
+      return '';
     }
   }
 
@@ -74,23 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${directory.path}/token.txt';
   }
 
-  Future<User> fetchUserData() async {
-    final response = await http.get(
-      Uri.parse(apiUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json', // Optional, depending on your API
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return User.fromJson(data);
-    } else {
-      throw Exception('Failed to load user data');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,57 +85,84 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
+        child: const Column(
           children: [
-            UserProfile(),
+            // UserProfile(),
+            UserDataProfile(),
           ],
         ),
       ),
     );
   }
+}
 
-  FutureBuilder UserProfile() => FutureBuilder<User>(
-        future: futureUser,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData) {
-            return const Text('No data available');
-          } else {
-            final user = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Card(
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _buildUserInfoRow('ID', user.id),
-                      _buildUserInfoRow('Username', user.username),
-                      if (user.fname != null)
-                        _buildUserInfoRow('First Name', user.fname!),
-                      if (user.lname != null)
-                        _buildUserInfoRow('Last Name', user.lname!),
-                      _buildUserInfoRow('Admin', user.isAdmin ? 'Yes' : 'No'),
-                      _buildUserInfoRow(
-                          'Created At', user.createdAt.toLocal().toString()),
-                      _buildUserInfoRow(
-                          'Updated At', user.updatedAt.toLocal().toString()),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-        },
-      );
+class UserDataProfile extends StatefulWidget {
+  const UserDataProfile({super.key});
+
+  @override
+  State<UserDataProfile> createState() => _UserDataProfileState();
+}
+
+class _UserDataProfileState extends State<UserDataProfile> {
+  String token = "";
+  late Future<User> futureUser;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      futureUser = fetchUserData();
+    });
+  }
+
+  Future<String> _loadToken() async {
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+
+      if (await file.exists()) {
+        token = await file.readAsString();
+      }
+      return token;
+    } catch (e) {
+      // Handle file read error
+      return '';
+    }
+  }
+
+  Future<void> _writeToFile(String content) async {
+    final filePath = await _getFilePath();
+    final file = File(filePath);
+    await file.writeAsString(content);
+    setState(() {
+      token = content;
+    });
+  }
+
+  final String apiUrl = 'https://wallet-api-7m1z.onrender.com/user/information';
+
+  Future<String> _getFilePath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return '${directory.path}/token.txt';
+  }
+
+  Future<User> fetchUserData() async {
+    final auth = await _loadToken();
+    print(">>> $auth");
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer $auth',
+        'Content-Type': 'application/json', // Optional, depending on your API
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      return User.fromJson(data);
+    } else {
+      throw Exception('Failed to load user data');
+    }
+  }
 
   Widget _buildUserInfoRow(String label, String value) {
     return Padding(
@@ -178,6 +185,52 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<User>(
+      future: futureUser,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const LinearProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData) {
+          return const Text('No data available');
+        } else {
+          final user = snapshot.data!;
+          return Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _buildUserInfoRow('ID', user.id),
+                    _buildUserInfoRow('Username', user.username),
+                    if (user.fname != null)
+                      _buildUserInfoRow('First Name', user.fname!),
+                    if (user.lname != null)
+                      _buildUserInfoRow('Last Name', user.lname!),
+                    _buildUserInfoRow('Admin', user.isAdmin ? 'Yes' : 'No'),
+                    _buildUserInfoRow(
+                        'Created At', user.createdAt.toLocal().toString()),
+                    _buildUserInfoRow(
+                        'Updated At', user.updatedAt.toLocal().toString()),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }
