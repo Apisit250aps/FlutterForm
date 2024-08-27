@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/models/user_modal.dart';
 import 'package:flutter_form/screens/signin_screen.dart';
-import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
