@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form/screens/signup_screen.dart';
 import 'package:flutter_form/widgets/forms/signin_form.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -43,7 +44,7 @@ class SigninScreen extends StatelessWidget {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SigninScreen()),
+                          builder: (context) => const SignupScreen()),
                       (Route<dynamic> route) => false,
                     );
                   },

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/models/user_modal.dart';
 import 'package:flutter_form/screens/signin_screen.dart';
+import 'package:flutter_form/widgets/forms/editprofile_form.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -82,13 +83,19 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(onPressed: _logout, icon: Icon(Icons.exit_to_app))
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: const Column(
-          children: [
-            // UserProfile(),
-            UserDataProfile(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 20,
+          ),
+          child: const Column(
+            children: [
+              // UserProfile(),
+              UserDataProfile(),
+              EditprofileForm()
+            ],
+          ),
         ),
       ),
     );
@@ -128,14 +135,7 @@ class _UserDataProfileState extends State<UserDataProfile> {
     }
   }
 
-  Future<void> _writeToFile(String content) async {
-    final filePath = await _getFilePath();
-    final file = File(filePath);
-    await file.writeAsString(content);
-    setState(() {
-      token = content;
-    });
-  }
+  
 
   final String apiUrl = 'https://wallet-api-7m1z.onrender.com/user/information';
 

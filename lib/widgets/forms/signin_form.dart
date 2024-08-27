@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/screens/home_screen.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -25,9 +26,8 @@ class _SigninFormState extends State<SigninForm> {
     print(_fileContent);
   }
 
-  Future<void> login() async {
-    final url = Uri.parse(
-        'https://wallet-api-7m1z.onrender.com/auth/login'); // แทนที่ด้วย URL ของ API จริง
+  Future<void> login(BuildContext context) async {
+    final url = Uri.parse('https://wallet-api-7m1z.onrender.com/auth/login');
 
     try {
       final response = await http.post(
@@ -54,16 +54,39 @@ class _SigninFormState extends State<SigninForm> {
             (Route<dynamic> route) => false,
           );
         } else {
-          print('Token not received');
+          _showDialog(context, 'Login Error', 'Token not received.');
         }
       } else {
         // ถ้าการล็อกอินล้มเหลว (เช่นได้รับ HTTP 401)
-        print('Login failed with status: ${response.statusCode}');
-        print('Response: ${response.body}');
+        _showDialog(
+          context,
+          'Login Failed',
+          'Status: ${response.statusCode}\nResponse: ${response.body}',
+        );
       }
     } catch (e) {
-      print('Error occurred: $e');
+      _showDialog(context, 'Error', 'An error occurred: $e');
     }
+  }
+
+  void _showDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<String> _getFilePath() async {
@@ -167,7 +190,7 @@ class _SigninFormState extends State<SigninForm> {
         ),
         const SizedBox(height: 25.0),
         InkWell(
-          onTap: () => login(),
+          onTap: () => login(context),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(25),

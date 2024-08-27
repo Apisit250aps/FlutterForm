@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form/screens/home_screen.dart';
+import 'package:flutter_form/screens/signin_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -14,9 +16,8 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
 
-  Future<void> register() async {
-    final url = Uri.parse(
-        'https://wallet-api-7m1z.onrender.com/auth/register'); // แทนที่ด้วย URL ของ API จริง
+  Future<void> register(BuildContext context) async {
+    final url = Uri.parse('https://wallet-api-7m1z.onrender.com/auth/register');
 
     try {
       final response = await http.post(
@@ -25,25 +26,53 @@ class _SignUpFormState extends State<SignUpForm> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'username': _usernameController.text, // ใช้ .text เพื่อดึงค่า
-          'password': _passwordController.text, // ใช้ .text เพื่อดึงค่า
+          'username': _usernameController.text,
+          'password': _passwordController.text,
         }),
       );
 
       if (response.statusCode == 200) {
-        // ถ้าการล็อกอินสำเร็จ (เช่นได้รับ HTTP 200)
+        // ถ้าการลงทะเบียนสำเร็จ (เช่นได้รับ HTTP 200)
         final data = jsonDecode(response.body);
         final token = data['token']; // สมมติว่า API คืน token กลับมา
-        print('register successful. Token: $token');
+        print('Register successful. Token: $token');
         // คุณสามารถจัดเก็บ token หรือทำการ navigation ไปยังหน้าถัดไปได้ที่นี่
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SigninScreen()),
+          (Route<dynamic> route) => false,
+        );
       } else {
-        // ถ้าการล็อกอินล้มเหลว (เช่นได้รับ HTTP 401)
-        print('register failed with status: ${response.statusCode}');
-        print('Response: ${response.body}');
+        // ถ้าการลงทะเบียนล้มเหลว
+        _showDialog(
+          context,
+          'Register Failed',
+          'Status: ${response.statusCode}\nResponse: ${response.body}',
+        );
       }
     } catch (e) {
-      print('Error occurred: $e');
+      _showDialog(context, 'Error', 'An error occurred: $e');
     }
+  }
+
+  void _showDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -116,7 +145,7 @@ class _SignUpFormState extends State<SignUpForm> {
         ),
         const SizedBox(height: 25.0),
         InkWell(
-          onTap: () => register(),
+          onTap: () => register(context),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(25),
