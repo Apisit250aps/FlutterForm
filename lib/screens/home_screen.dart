@@ -71,16 +71,31 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${directory.path}/token.txt';
   }
 
+  bool _isEditing = false;
+
+  void _toggleEdit() {
+    setState(() {
+      _isEditing = !_isEditing;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // Disables the automatic leading widget
-        leading: null, // Explicitly set leading to null
+        automaticallyImplyLeading: false,
+        leading: null,
         title: const Text('User Information'),
         actions: [
-          IconButton(onPressed: _logout, icon: Icon(Icons.exit_to_app))
+          IconButton(
+            onPressed: _toggleEdit,
+            icon: Icon(_isEditing ? Icons.check : Icons.edit),
+          ),
+          IconButton(
+            onPressed: _logout,
+            icon: Icon(Icons.exit_to_app),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -89,11 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
             horizontal: 10,
             vertical: 20,
           ),
-          child: const Column(
+          child: Column(
             children: [
-              // UserProfile(),
               UserDataProfile(),
-              EditprofileForm()
+              if (_isEditing) EditprofileForm(),
             ],
           ),
         ),
