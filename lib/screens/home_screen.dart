@@ -79,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,8 +147,6 @@ class _UserDataProfileState extends State<UserDataProfile> {
       return '';
     }
   }
-
-  
 
   final String apiUrl = 'https://wallet-api-7m1z.onrender.com/user/information';
 

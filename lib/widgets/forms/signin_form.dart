@@ -27,6 +27,26 @@ class _SigninFormState extends State<SigninForm> {
   }
 
   Future<void> login(BuildContext context) async {
+    // Validate username and password
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty) {
+      _showDialog(context, 'Validation Error', 'Username cannot be empty.');
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showDialog(context, 'Validation Error', 'Password cannot be empty.');
+      return;
+    }
+
+    if (password.length < 6) {
+      _showDialog(context, 'Validation Error',
+          'Password must be at least 6 characters long.');
+      return;
+    }
+
     final url = Uri.parse('https://wallet-api-7m1z.onrender.com/auth/login');
 
     try {
@@ -36,15 +56,14 @@ class _SigninFormState extends State<SigninForm> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'username': _usernameController.text,
-          'password': _passwordController.text,
+          'username': username,
+          'password': password,
         }),
       );
 
       if (response.statusCode == 200) {
-        // ถ้าการล็อกอินสำเร็จ (เช่นได้รับ HTTP 200)
         final data = jsonDecode(response.body);
-        final token = data['token'] as String?; // การแคสต์เป็น String?
+        final token = data['token'] as String?;
         if (token != null) {
           print('Login successful. Token: $token');
           await _writeToFile(token);
@@ -57,7 +76,6 @@ class _SigninFormState extends State<SigninForm> {
           _showDialog(context, 'Login Error', 'Token not received.');
         }
       } else {
-        // ถ้าการล็อกอินล้มเหลว (เช่นได้รับ HTTP 401)
         _showDialog(
           context,
           'Login Failed',
